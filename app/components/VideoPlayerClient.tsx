@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
-import Link from "next/link";
+import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { useSession } from "next-auth/react";
 
 /**
@@ -139,7 +139,10 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
   // Effect hook to fetch the video's user details.
   useEffect(() => {
     const run = async () => {
-      const res = await fetch(`/api/users/${video.userId}`);
+      const res = await fetch(`/api/users/${video.userId}`, {
+        method: "GET",
+        cache: "no-store",
+      });
       if (res.ok) {
         const data = await res.json();
         setVideoUser(data);
@@ -156,6 +159,7 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
     try {
       const res = await fetch(`/api/videos/${video.id}/likes`, {
         method: "POST",
+        cache: "no-store",
       });
       if (!res.ok) throw new Error("like_failed");
       const data = await res.json();
@@ -179,6 +183,7 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
+        cache: "no-store",
       });
       if (!res.ok) throw new Error("comment_failed");
       const created = await res.json();
@@ -198,14 +203,31 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
 
   return (
     <main className="min-h-screen text-gray-100 flex flex-col items-center p-8">
-      <div className="w-full max-w-4xl app-card p-8 text-center">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
-            {video.title} {/* Display video title */}
-          </h1>
-          <p className="text-gray-400 text-sm mb-4">
-            {videoUser ? videoUser?.username : "new user"}
-          </p>
+      <div className="w-full max-w-4xl app-card p-8">
+        <div className="flex items-center justify-between gap-3 mb-6 z-30 sticky top-2 bg-black/70 backdrop-blur-xl rounded-b-2xl">
+          <div className="flex flex-col items-start justify-center gap-0 p-3">
+            <h1 className="text-xl font-bold mb-0 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+              {video.title} {/* Display video title */}
+            </h1>
+            <p className="text-start text-gray-400 text-sm">
+              {videoUser ? videoUser?.username : " "}
+            </p>
+          </div>
+          <button
+            onClick={likeUnlikeVideo}
+            disabled={status !== "authenticated" || likeBusy}
+            className={`inline-flex flex-col items-center gap-0 px-4 py-2 bg-transparent border-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
+              status !== "authenticated" ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+            aria-pressed={liked}
+          >
+            {liked ? (
+              <IoMdHeart className="h-5 w-5" />
+            ) : (
+              <IoMdHeartEmpty className="h-5 w-5" />
+            )}
+            <span className="text-xs text-gray-400">{likeCount}</span>
+          </button>
         </div>
         <div className="aspect-video bg-black rounded-xl overflow-hidden mb-6">
           <video
@@ -218,55 +240,6 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
           {/* Uploaded: {new Date(video.uploadDate).toLocaleString()}{" "} */}
           {/* Display formatted upload date */}
         </p>
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <button
-            onClick={likeUnlikeVideo}
-            disabled={status !== "authenticated" || likeBusy}
-            className={`inline-flex items-center gap-2 px-4 py-2 app-button ${
-              status !== "authenticated" ? "opacity-60 cursor-not-allowed" : ""
-            }`}
-            aria-pressed={liked}
-          >
-            {liked ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-            )}{" "}
-            · {likeCount}
-          </button>
-          <Link
-            href="/"
-            className="inline-flex items-center px-4 py-2 app-button"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Back to Home {/* Link to navigate back to the home page */}
-          </Link>
-        </div>
 
         <div className="text-left">
           <h2 className="text-lg font-semibold mb-3">Comments</h2>

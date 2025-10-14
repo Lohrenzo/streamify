@@ -5,7 +5,8 @@ import { auth } from "@/auth";
 /**
  * List comments for a video (most recent first).
  */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const videoId = await params.id;
     const comments = await prisma.comment.findMany({
         where: { videoId },
@@ -19,7 +20,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 /**
  * Create a new comment (authenticated users only).
  */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const videoId = await params.id;
     const session = await auth();
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

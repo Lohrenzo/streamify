@@ -8,7 +8,8 @@ import { prisma } from "@/prisma";
  * @param {{ params: { id: string } }} param1 - Route params containing the video `id`.
  * @returns {NextResponse} JSON with the `Video` or an error/status code.
  */
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     try {
         const { id } = params;
 

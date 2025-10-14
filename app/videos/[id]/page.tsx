@@ -9,7 +9,7 @@ import VideoPlayerClient from "@/app/components/VideoPlayerClient";
  * @property {string} params.id - The unique identifier of the video to be displayed.
  */
 interface VideoDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -22,9 +22,8 @@ interface VideoDetailsPageProps {
  * @returns {Promise<JSX.Element>} A promise that resolves to the rendered `VideoPlayerClient`
  * with the fetched video data.
  */
-export default async function VideoDetailsPage({
-  params,
-}: VideoDetailsPageProps) {
+export default async function VideoDetailsPage(props: VideoDetailsPageProps) {
+  const params = await props.params;
   // Extract the video ID from the URL parameters.
   const { id } = params;
 

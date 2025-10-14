@@ -5,7 +5,8 @@ import { auth } from "@/auth";
 /**
  * Get like summary for a video: total count and whether current user liked it.
  */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const videoId = await params.id;
     const session = await auth();
     const db = prisma as any;
@@ -23,7 +24,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 /**
  * Like a video (authenticated users only). Idempotent.
  */
-export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(_req: NextRequest, props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const videoId = await params.id;
     const session = await auth();
     if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
