@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b0b0f; /* base dark */
+  --foreground: #e6e6eb; /* base light */
+  --brand-start: #7c3aed; /* purple-600 */
+  --brand-end: #2563eb; /* blue-600 */
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --ring: rgba(124,58,237,0.5);
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --radius: 14px;
 }
 
 @theme inline {
@@ -14,17 +21,21 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0b0b0f;
+    --foreground: #e6e6eb;
   }
 }
 
 body {
-  background: var(--background);
+  background: radial-gradient(1000px 600px at 20% -10%, rgba(124,58,237,0.12), transparent),
+    radial-gradient(900px 500px at 100% 0%, rgba(37,99,235,0.12), transparent),
+    linear-gradient(180deg, #0b0b0f 0%, #0b0b0f 100%);
   color: var(--foreground);
   /* font-family: Arial, Helvetica, sans-serif;
   background: radial-gradient(ellipse at top, #1a1a1a, #000); */
   font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {
@@ -35,3 +46,28 @@ body {
   background: #444;
   border-radius: 4px;
 }
+
+::selection {
+  background: rgba(124,58,237,0.35);
+  color: white;
+}
+
+/* Reusable primitives */
+.app-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.app-button {
+  background-image: linear-gradient(90deg, var(--brand-start), var(--brand-end));
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform 150ms ease, opacity 150ms ease, box-shadow 150ms ease;
+}
+.app-button:hover { opacity: 0.95; transform: translateY(-1px); }
+.app-button:active { transform: translateY(0); }
+.app-button:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ring); }
+.app-button[disabled] { opacity: 0.6; cursor: not-allowed; }

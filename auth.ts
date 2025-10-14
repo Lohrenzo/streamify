@@ -1,14 +1,21 @@
 
+/**
+ * NextAuth configuration for Streamify.
+ *
+ * - Supports Google OAuth and credentials-based sign-in/sign-up.
+ * - Extends session and JWT to include profile fields (first_name, last_name, username).
+ * - Uses Prisma adapter against the project's Prisma client.
+ */
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import type { Provider } from "next-auth/providers"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { createUser, getUserByEmail, hashPassword, verifyPassword } from "./utils/db"
+import { createUser, getUserByEmail, verifyPassword } from "./utils/db"
 import { signInSchema, signUpSchema } from "@/lib/zod"
 import { prisma } from "@/prisma"
 
-// Extend NextAuth types to include first_name and last_name
+// Extend NextAuth types to include profile fields used across the app
 declare module "next-auth" {
     interface User {
         first_name?: string
@@ -26,6 +33,9 @@ declare module "next-auth" {
     }
 }
 
+/**
+ * Authentication providers used by NextAuth.
+ */
 const providers: Provider[] = [
     Google({
         clientId: process.env.AUTH_GOOGLE_ID,
@@ -37,7 +47,9 @@ const providers: Provider[] = [
                 id: profile.sub,
                 first_name: profile.given_name,
                 last_name: profile.family_name,
-                username: `${profile.given_name}.${profile.family_name}${Math.random() * 10}`.toLowerCase(),
+                username: `${profile.given_name}.${profile.family_name}${Math.floor(Math.random() * 101)
+                    .toString()
+                    .padStart(3, "0")}`.toLowerCase(),
                 email: profile.email,
                 image: profile.picture,
                 emailVerified: profile.emailVerified ? new Date() : null,
@@ -154,6 +166,9 @@ const providers: Provider[] = [
     })
 ]
 
+/**
+ * Exported NextAuth helpers and route handlers.
+ */
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: PrismaAdapter(prisma),
     providers: providers,

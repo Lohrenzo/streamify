@@ -5,10 +5,19 @@ import { updateUser } from '@/utils/db';
 // import { FormState } from 'react-hook-form'
 
 /**
- * Credentials Signup action handler
- *
- * @param formData - Form data from the signup form
- * @returns Redirects to the home page on success
+ * @module authActions
+ * @description Server actions for handling authentication-related operations such as sign-up,
+ * sign-in, Google authentication, sign-out, and user profile updates.
+ * These functions are marked with "use server" to ensure they run only on the server.
+ */
+
+/**
+ * @function handleSignUp
+ * @description Handles the sign-up process using credentials. It extracts user registration details
+ * from the provided form data and attempts to create a new user session.
+ * @param {FormData} formData - The form data containing user registration details (first name, last name, email, username, date of birth, password, and confirm password).
+ * @returns {Promise<void>} This function attempts to sign in the user immediately after sign-up.
+ * If successful, it redirects to the home page (`/`). Throws an error if sign-up fails.
  */
 export async function handleSignUp(formData: FormData) {
   "use server";
@@ -26,10 +35,12 @@ export async function handleSignUp(formData: FormData) {
 }
 
 /**
- * Credentials Signin action handler
- *
- * @param formData - Form data from the signin form
- * @returns Redirects to the home page on success
+ * @function handleSignIn
+ * @description Handles the sign-in process using credentials. It extracts user login details
+ * from the provided form data and attempts to authenticate the user.
+ * @param {FormData} formData - The form data containing user login credentials (email and password).
+ * @returns {Promise<void>} This function attempts to sign in the user.
+ * If successful, it redirects to the home page (`/`). Throws an error if sign-in fails.
  */
 export async function handleSignIn(formData: FormData) {
   "use server";
@@ -42,10 +53,11 @@ export async function handleSignIn(formData: FormData) {
 }
 
 /**
- * Google authentication action handler.
- * Uses google to sign in or sign up the user.
- *
- * @returns Redirects to the home page on success
+ * @function authenticateWithGoogle
+ * @description Initiates the Google OAuth authentication flow. This function is a server action
+ * that redirects the user to Google's authentication page.
+ * @returns {Promise<void>} This function redirects the user for Google authentication.
+ * Upon successful authentication, Auth.js handles the callback and redirects to the home page (`/`).
  */
 export async function authenticateWithGoogle() {
   "use server";
@@ -55,21 +67,23 @@ export async function authenticateWithGoogle() {
   });
 }
 
-
 /**
- * Signout action handler
- *
- * @returns Redirects to the login page
+ * @function handleSignOut
+ * @description Handles the user sign-out process. This function terminates the current user session.
+ * @returns {Promise<void>} This function redirects the user to the login page (`/auth/login`)
+ * or a default configured page after signing out.
  */
 export async function handleSignOut() {
   await signOut()
-  // redirect('/auth/login')
+  // redirect('/auth/login') // This commented-out line shows a potential redirection after signOut.
 }
 
 /**
- * Update user action handler
- *
- * @returns User object on success, otherwise throws error
+ * @function handleUpdateUser
+ * @description Handles updating a user's profile information (username, first name, last name).
+ * @param {FormData} formData - The form data containing the updated user details.
+ * @param {any} user - The current user object, expected to contain `id`.
+ * @returns {Promise<any>} Returns the updated user object on success, otherwise throws an error.
  */
 export async function handleUpdateUser(formData: FormData, user: any) {
 

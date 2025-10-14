@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto_Mono, Fahkwang } from "next/font/google";
 import "./globals.css";
 
-// import { auth } from "@/auth";
 import { Providers } from "@/app/providers";
+import Footer from "./components/Footer";
+import Nav from "./components/Nav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const robotoMono = Roboto_Mono({
+  variable: "--font-roboto-mono",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const fahkwang = Fahkwang({
+  subsets: ["latin-ext"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -28,11 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`
+         ${robotoMono.className} antialiased`}
       >
         <Providers>
-          {/* {session?.user && <NavBar />} */}
-          {children}
+          <div className="min-h-dvh">
+            {children}
+            <Footer />
+            <Nav />
+          </div>
         </Providers>
       </body>
     </html>

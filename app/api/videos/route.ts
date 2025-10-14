@@ -23,11 +23,9 @@ import { auth } from "@/auth";
 // }
 
 /**
- * @function GET
- * @description Handles GET requests to retrieve a list of all uploaded video metadata from the database.
- * This API endpoint queries the database using Prisma.
- * @returns {NextResponse} A JSON response containing an array of `Video` objects
- * or an empty array if no videos are uploaded yet, or an error message.
+ * Handles GET requests to retrieve a list of all uploaded video metadata from the database.
+ *
+ * @returns {NextResponse} JSON with an array of videos ordered by `uploadDate` (descending).
  */
 export async function GET() {
     try {

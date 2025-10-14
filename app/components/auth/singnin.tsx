@@ -3,6 +3,14 @@ import { authenticateWithGoogle, handleSignIn } from "@/app/actions/auth";
 import Button from "@/app/components/Button";
 import { useTransition } from "react";
 
+/**
+ * Client component rendering the sign-in UI with credential and Google OAuth flows.
+ *
+ * - Submits credentials to the server action `handleSignIn`.
+ * - Triggers Google OAuth via `authenticateWithGoogle`.
+ *
+ * @returns JSX element containing sign-in forms and links.
+ */
 export default function SignInForm() {
   const [isPending, startTransition] = useTransition();
 

@@ -76,7 +76,11 @@ export default function VideoGrid({ refreshKey }: VideoGridProps) {
 
   // Display a loading message while videos are being fetched.
   if (loading) {
-    return <p className="text-gray-400">Loading videos...</p>;
+    return (
+      <div className="w-full flex justify-center items-center">
+        <div className="animate-spin rounded-full max-h-7 max-w-7 border-b-2 p-2 border-gray-400"></div>
+      </div>
+    );
   }
 
   // Display an error message if fetching failed.
@@ -86,7 +90,7 @@ export default function VideoGrid({ refreshKey }: VideoGridProps) {
 
   // Display a message if no videos have been uploaded yet.
   if (videos.length === 0) {
-    return <p className="text-gray-400">No videos uploaded yet.</p>;
+    return <p className="text-gray-400 text-sm">No videos uploaded yet.</p>;
   }
 
   // Render the grid of VideoCard components if videos are available.

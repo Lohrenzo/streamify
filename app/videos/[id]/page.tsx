@@ -2,43 +2,46 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/prisma";
 import VideoPlayerClient from "@/app/components/VideoPlayerClient";
 
+/**
+ * @interface VideoDetailsPageProps
+ * @description Props for the VideoDetailsPage component.
+ * @property {object} params - An object containing the route parameters.
+ * @property {string} params.id - The unique identifier of the video to be displayed.
+ */
 interface VideoDetailsPageProps {
   params: { id: string };
 }
 
 /**
- * @interface VideoMetadata
- * @description Defines the structure for video metadata, consistent with what's stored in the database.
- * @property {string} id - Unique identifier for the video.
- * @property {string} title - Display title of the video.
- * @property {string} manifestUrl - URL to the HLS manifest for streaming.
- * @property {Date} uploadDate - The date when the video was uploaded.
- * @property {string} thumbnailUrl - URL to the video's thumbnail image.
- */
-/**
  * @function VideoDetailsPage
- * @description A dynamic Next.js page component for displaying and playing a single video.
- * It fetches video details based on the `id` parameter from the URL using Prisma
- * and uses `hls.js` for smooth client-side streaming.
+ * @description A dynamic Next.js server page component responsible for fetching details
+ * of a single video from the database based on its ID. It then passes these details
+ * to a client component (`VideoPlayerClient`) for interactive video playback.
+ * If the video is not found, it triggers a 404 response.
  * @param {VideoDetailsPageProps} { params } - Destructured props, containing the route parameters.
- * @returns {JSX.Element} The rendered video details page with video player, title, and upload date.
+ * @returns {Promise<JSX.Element>} A promise that resolves to the rendered `VideoPlayerClient`
+ * with the fetched video data.
  */
 export default async function VideoDetailsPage({
   params,
 }: VideoDetailsPageProps) {
+  // Extract the video ID from the URL parameters.
   const { id } = params;
 
-  // Fetch video details directly from the database using Prisma.
+  // Fetch video details directly from the database using Prisma's `findUnique` method.
+  // This ensures that only the requested video's data is retrieved.
   const video = await prisma.video.findUnique({
     where: {
-      id: id,
+      id: id, // Match the video by its unique ID.
     },
   });
 
-  // If no video is found, render a 404 page.
+  // If no video record is found in the database for the given ID, trigger Next.js's 404 notFound function.
   if (!video) {
     notFound();
   }
 
+  // Render the `VideoPlayerClient` component, passing the fetched video data to it.
+  // The `VideoPlayerClient` is a client component that handles the interactive playback.
   return <VideoPlayerClient video={video} />;
 }

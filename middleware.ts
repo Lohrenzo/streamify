@@ -1,12 +1,19 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 
+/**
+ * Middleware to protect routes based on authentication state.
+ *
+ * - Allows access to public paths.
+ * - Redirects unauthenticated users to `/auth/signin` for protected routes.
+ */
+
 export default auth((req) => {
     const { nextUrl } = req
     const isLoggedIn = !!req.auth
 
     // Public routes
-    const publicPaths = ["/", "/auth/signin", "/auth/signup", "/auth/error"]
+    const publicPaths = ["/", "/videos/:path*", "/auth/signin", "/auth/signup", "/auth/error"]
 
     // If user is not logged in and trying to access a protected route → redirect
     if (!isLoggedIn && !publicPaths.includes(nextUrl.pathname)) {

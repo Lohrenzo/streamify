@@ -28,6 +28,8 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   // State to store messages to be displayed to the user (e.g., "Uploading...", "Upload successful!").
   const [message, setMessage] = useState<string | null>(null);
+  // State to store the user-provided video title.
+  const [videoTitle, setVideoTitle] = useState<string>("");
   // Ref to directly access the file input element.
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   // Get the current session status to determine if the user is authenticated.
@@ -49,6 +51,12 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
       return;
     }
 
+    // If no video title is provided, display a message and stop.
+    if (!videoTitle.trim()) {
+      setMessage("Please enter a video title.");
+      return;
+    }
+
     // Ensure user is authenticated before proceeding with upload.
     if (status !== "authenticated") {
       setMessage("You must be logged in to upload videos.");
@@ -63,6 +71,7 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
     // Create FormData to send the file as multipart/form-data.
     const formData = new FormData();
     formData.append("video", file); // Append the video file with the name "video".
+    formData.append("title", videoTitle); // Append the user-provided video title.
 
     try {
       // Make a POST request to the upload API endpoint.
@@ -86,6 +95,7 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
         fileInputRef.current.value = "";
       }
       setUploadProgress(100); // Set progress to 100% on completion.
+      setVideoTitle(""); // Clear the video title input.
       onUploadSuccess(); // Trigger the callback provided by the parent component.
     } catch (err) {
       console.error(err); // Log any errors.
@@ -97,11 +107,18 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto mb-8 p-6 bg-white/5 rounded-lg border border-white/10 shadow-lg">
-      <h2 className="text-2xl font-bold mb-4 text-purple-300">
-        Upload New Video
-      </h2>
+    <div className="w-full max-w-xl mx-auto mb-8 p-6 app-card">
+      <h2 className="text-2xl font-bold mb-4">Upload New Video</h2>
       <div className="flex flex-col items-center space-y-4">
+        {/* Input field for the video title */}
+        <input
+          type="text"
+          placeholder="Enter video title (e.g., My Awesome Stream)"
+          value={videoTitle}
+          onChange={(e) => setVideoTitle(e.target.value)}
+          className="w-full p-3 rounded-lg bg-white/5 border border-white/20 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        {/* Label for the file input */}
         <label
           htmlFor="file-upload"
           className="cursor-pointer w-full border border-white/20 rounded-lg p-4 bg-white/5 hover:bg-white/10 transition-colors text-gray-300"
@@ -122,11 +139,8 @@ export default function VideoUpload({ onUploadSuccess }: VideoUploadProps) {
         <button
           onClick={handleUpload}
           disabled={isUploading || status !== "authenticated"} // Disable button during upload or if not authenticated
-          className={`px-6 py-2 rounded-lg font-semibold transition-all w-full ${
-            isUploading
-              ? "bg-gray-600 cursor-not-allowed"
-              : "bg-gradient-to-r from-purple-500 to-blue-600 hover:opacity-90"
-          }
+          className={`app-button w-full px-6 py-2 ${
+            isUploading ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
           {/* Button text changes based on uploading state */}

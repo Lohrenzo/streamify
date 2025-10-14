@@ -7,7 +7,7 @@ generator client {
 datasource db {
   // SQLite for development
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "file:./dev.sqlite"
   // PostgreSQL for production
   // provider = "postgresql"
   // url      = env("DATABASE_URL")
@@ -61,6 +61,8 @@ model User {
   accounts Account[]
   sessions Session[]
   videos   Video[]
+  likes    Like[]
+  comments Comment[]
 
   @@map("users")
 }
@@ -83,5 +85,34 @@ model Video {
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  likes    Like[]
+  comments Comment[]
+
   @@map("videos")
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  videoId   String
+  content   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
 }

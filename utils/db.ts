@@ -1,34 +1,35 @@
 import { prisma } from "@/prisma"
 import bcrypt from "bcryptjs"
 
-/** 
-* Hash a password 
-* 
-* @param password - Plain text password 
-* @returns Promise with hashed password 
-*/
+/**
+ * Database utilities for user management: hashing, verification, CRUD, and password reset.
+ */
+
+/**
+ * Hash a password.
+ * @param password - Plain text password.
+ * @returns Promise that resolves to a hashed password string.
+ */
 export async function hashPassword(password: string | any): Promise<string> {
     const salt = await bcrypt.genSalt(10)
     return await bcrypt.hash(password, salt)
 }
 
-/** 
-* Verify a password against its hash 
-* 
-* @param password - Plain text password 
-* @param hash - Hashed password from database 
-* @returns Promise with boolean result 
-*/
+/**
+ * Verify a password against its hash.
+ * @param password - Plain text password.
+ * @param hash - Hashed password from database.
+ * @returns Promise that resolves to true if the password matches, otherwise false.
+ */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash)
 }
 
-/** 
-* Verify if the user exists in the database 
-* 
-* @param email - User email 
-* @returns User object if found, otherwise null 
-*/
+/**
+ * Find a user by email.
+ * @param email - User email.
+ * @returns User object if found, otherwise null.
+ */
 export async function getUserByEmail(email: string) {
     try {
         const user = await prisma.user.findUnique({
@@ -44,17 +45,16 @@ export async function getUserByEmail(email: string) {
     }
 }
 
-/** 
-* Create a new user in the database 
-* 
-* @param email - User email 
-* @param password - User hashed password 
-* @param username - Optional username 
-* @param first_name - Optional first name 
-* @param last_name - Optional last name 
-* @param dob - Optional date of birth 
-* @returns User object if successful, otherwise throws error 
-*/
+/**
+ * Create a new user in the database.
+ * @param email - User email.
+ * @param password - User plain-text password (will be hashed).
+ * @param username - Optional username.
+ * @param first_name - Optional first name.
+ * @param last_name - Optional last name.
+ * @param dob - Optional date of birth.
+ * @returns User object if successful, otherwise throws.
+ */
 export async function createUser(email: string, password: string, username?: string, first_name?: string, last_name?: string, dob?: Date) {
     try {
         const hashedPassword = await hashPassword(password)
@@ -77,16 +77,15 @@ export async function createUser(email: string, password: string, username?: str
     }
 }
 
-/** 
-* Update a user in the database 
-* 
-* @param is - User id 
-* @param username - Optional username 
-* @param first_name - Optional first name 
-* @param last_name - Optional last name 
-* @param dob - Optional date of birth 
-* @returns User object if successful, otherwise throws error 
-*/
+/**
+ * Update a user in the database.
+ * @param id - User id.
+ * @param username - Optional username.
+ * @param first_name - Optional first name.
+ * @param last_name - Optional last name.
+ * @param dob - Optional date of birth.
+ * @returns User object if successful, otherwise throws.
+ */
 export async function updateUser(id: string, username?: string, first_name?: string, last_name?: string, dob?: Date) {
     try {
         const user = await prisma.user.findUnique({
@@ -118,12 +117,11 @@ export async function updateUser(id: string, username?: string, first_name?: str
     }
 }
 
-/** 
- * Get user profile by ID
-* 
-* @param id - User ID
-* @returns User object if found, otherwise null
-*/
+/**
+ * Get user profile by ID.
+ * @param id - User ID.
+ * @returns User object if found, otherwise null.
+ */
 export async function getUserProfileById(id: string) {
     try {
         const user = await prisma.user.findUnique({
@@ -152,12 +150,11 @@ export async function getUserProfileById(id: string) {
 }
 
 /**
- * Password reset
- * 
- * @param email - User email
- * @param currentPassword - Current plain text password
- * @param newPassword - New plain text password
- * @returns Updated user object if successful, otherwise throws error
+ * Reset a user's password.
+ * @param id - User ID.
+ * @param currentPassword - Current plain text password.
+ * @param newPassword - New plain text password.
+ * @returns Updated user object if successful, otherwise throws.
  */
 export async function resetPassword(id: string, currentPassword: string, newPassword: string) {
     try {

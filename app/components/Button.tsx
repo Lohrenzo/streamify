@@ -11,7 +11,7 @@ function Button({ onClick, title, type, disabled }: ButtonProps) {
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="disabled:cursor-not-allowed cursor-pointer disabled:opacity-50 font-bold text-sm duration-150 ease-in-out hover:bg-blue-500/70 bg-blue-400/70 p-2 rounded-md"
+      className="app-button disabled:cursor-not-allowed cursor-pointer text-sm px-4 py-2"
     >
       {title}
     </button>

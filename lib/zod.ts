@@ -1,5 +1,12 @@
 import { z } from "zod"
 
+/**
+ * Zod schemas and inferred types for authentication forms.
+ */
+
+/**
+ * Schema for sign-in form validation.
+ */
 export const signInSchema = z.object({
     email: z.string().email("Please enter a valid email address"),
     password: z
@@ -9,6 +16,9 @@ export const signInSchema = z.object({
         .max(32, "Password must be less than 32 characters"),
 })
 
+/**
+ * Schema for sign-up form validation.
+ */
 export const signUpSchema = z.object({
     first_name: z
         .string()
@@ -40,5 +50,7 @@ export const signUpSchema = z.object({
     path: ["confirmPassword"],
 })
 
+/** Input type for sign-in form. */
 export type SignInInput = z.infer<typeof signInSchema>
+/** Input type for sign-up form. */
 export type SignUpInput = z.infer<typeof signUpSchema>

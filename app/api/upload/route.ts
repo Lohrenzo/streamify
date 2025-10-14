@@ -52,10 +52,16 @@ export async function POST(req: NextRequest) {
         // Parse the incoming request to extract form data, specifically the video file.
         const formData = await req.formData();
         const file = formData.get("video") as File | null;
+        const title = formData.get("title") as string | null;
 
         // If no file is provided in the form data, return a 400 Bad Request error.
         if (!file) {
             return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+        }
+
+        // If no title is provided, return a 400 Bad Request error.
+        if (!title) {
+            return NextResponse.json({ error: "No video title provided" }, { status: 400 });
         }
 
         // Convert the uploaded file into a Buffer for file system operations.
@@ -119,7 +125,7 @@ export async function POST(req: NextRequest) {
         // Save video metadata to the database using Prisma.
         const newVideo = await prisma.video.create({
             data: {
-                title: fileName,
+                title: title,
                 manifestUrl,
                 thumbnailUrl,
                 userId, // Associate video with the authenticated user

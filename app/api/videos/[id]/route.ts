@@ -2,13 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/prisma";
 
 /**
- * @function GET
- * @description Handles GET requests to retrieve a single video's metadata from the database by its ID.
- * This API endpoint queries the database using Prisma.
- * @param {Request} request - The incoming Next.js request object.
- * @param {{ params: { id: string } }} { params } - Destructured object containing the route parameters, specifically the video `id`.
- * @returns {NextResponse} A JSON response containing the `Video` object if found, or a 404 error if not found,
- * or a 500 error if a database retrieval error occurs.
+ * Retrieves a single video's metadata from the database by its ID.
+ *
+ * @param {Request} request - Incoming Next.js request object.
+ * @param {{ params: { id: string } }} param1 - Route params containing the video `id`.
+ * @returns {NextResponse} JSON with the `Video` or an error/status code.
  */
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {

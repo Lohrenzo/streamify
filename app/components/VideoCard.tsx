@@ -30,16 +30,21 @@ export default function VideoCard({
 }: VideoCardProps) {
   return (
     <Link href={`/videos/${id}`}>
-      <div className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors cursor-pointer">
-        <img
-          src={thumbnailUrl}
-          alt={title}
-          className="w-full h-40 object-cover rounded-md mb-3"
-        />
-        <h3 className="text-lg font-semibold text-purple-300">{title}</h3>
-        <p className="text-gray-400 text-sm mt-1">
-          Uploaded: {new Date(uploadDate).toLocaleDateString()}
-        </p>
+      <div className="app-card cursor-pointer overflow-hidden group">
+        <div className="relative">
+          <img
+            src={thumbnailUrl}
+            alt={title}
+            className="w-full h-44 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70 group-hover:opacity-90 transition-opacity" />
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-base font-semibold">{title}</h3>
+            <p className="text-xs text-gray-400">
+              {new Date(uploadDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
       </div>
     </Link>
   );
