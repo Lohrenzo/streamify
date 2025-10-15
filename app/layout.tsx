@@ -33,11 +33,11 @@ export default function RootLayout({
          ${robotoMono.className} antialiased`}
       >
         <Providers>
-          <div className="min-h-dvh">
+          <div className="min-h-dvh pb-16">
             {children}
-            <Footer />
-            <Nav />
+            {/* <Footer /> */}
           </div>
+          <Nav />
         </Providers>
       </body>
     </html>

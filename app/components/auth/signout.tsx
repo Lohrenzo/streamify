@@ -1,6 +1,6 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { GiExitDoor } from "react-icons/gi";
+import { ImExit } from "react-icons/im";
 
 /**
  * Button that signs the user out using NextAuth's `signOut`.
@@ -14,7 +14,7 @@ export function SignOut() {
       className="flex flex-col items-center duration-200 ease-in-out cursor-pointer text-gray-400 hover:text-red-500/80"
       type="submit"
     >
-      <GiExitDoor className="w-6 h-6" />
+      <ImExit className="w-6 h-6" />
       <span className="text-xs mt-1">Sign Out</span>
     </button>
   );
