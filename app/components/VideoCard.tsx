@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 /**
  * @interface VideoCardProps
@@ -11,7 +12,7 @@ import Link from "next/link";
 interface VideoCardProps {
   id: string;
   title: string;
-  uploadDate: string;
+  uploadDate: string | Date;
   thumbnailUrl: string;
 }
 
@@ -32,12 +33,14 @@ export default function VideoCard({
     <Link href={`/videos/${id}`}>
       <div className="app-card cursor-pointer overflow-hidden group">
         <div className="relative">
-          <img
+          <Image
             src={thumbnailUrl}
             alt={title}
-            className="w-full h-44 object-cover"
+            width={600}
+            height={400}
+            className="w-full h-44 object-cover group-hover:scale-105 transition duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-70 group-hover:opacity-90 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-70 group-hover:opacity-100 transition-opacity" />
           <div className="absolute bottom-0 left-0 right-0 p-4">
             <h3 className="text-base font-semibold">{title}</h3>
             <p className="text-xs text-gray-400">

@@ -1,3 +1,7 @@
 export default function SearchPage() {
-  return <main>SearchPage</main>;
+  return (
+    <main className="flex items-center justify-center min-h-[70vh]">
+      Coming Soon...
+    </main>
+  );
 }

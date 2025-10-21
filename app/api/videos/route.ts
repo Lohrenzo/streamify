@@ -35,6 +35,11 @@ export async function GET() {
                 uploadDate: "desc", // Order by most recent uploads
             },
         });
+
+        if (!videos || videos.length === 0) {
+            console.log("No video in database")
+            return NextResponse.json([]);
+        }
         // Return the array of videos as a JSON response.
         return NextResponse.json(videos);
     } catch (error: any) {

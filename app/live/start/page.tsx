@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
+import { BsBroadcast } from "react-icons/bs";
+import { GiStopSign } from "react-icons/gi";
 
 export default function StartLivePage() {
   const { data: session, status } = useSession();
@@ -46,7 +48,7 @@ export default function StartLivePage() {
         if (pc)
           await pc.setRemoteDescription(new RTCSessionDescription(msg.answer));
       }
-      if (msg.type === "iceCandidate" && msg.from) {
+      if (msg.type === "candidate" && msg.from) {
         const pc = peerConnections.current.get(msg.from);
         if (pc && msg.candidate)
           await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
@@ -96,11 +98,15 @@ export default function StartLivePage() {
       if (event.candidate)
         wsRef.current?.send(
           JSON.stringify({
-            type: "iceCandidate",
+            type: "candidate",
             to: viewerId,
             candidate: event.candidate,
           })
         );
+    };
+
+    pc.onconnectionstatechange = () => {
+      console.log("📡 Connection state:", pc.connectionState);
     };
 
     const offer = await pc.createOffer();
@@ -114,21 +120,24 @@ export default function StartLivePage() {
         ref={videoRef}
         autoPlay
         playsInline
-        className="w-[480px] rounded-lg border border-gray-700 shadow-lg"
+        className="w-[480px] app-card shadow-lg"
       />
       {!isLive ? (
         <button
           onClick={startLive}
-          className="mt-6 bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold"
+          className="mt-6 cursor-pointer inline-flex flex-row items-center justify-center gap-1 px-4 py-2 text-sm app-button rounded-lg transition"
         >
-          🎥 Go Live
+          <BsBroadcast className="w-6 h-6" />
+          Go Live
         </button>
       ) : (
         <button
           onClick={stopLive}
-          className="mt-6 bg-gray-700 hover:bg-gray-800 px-6 py-3 rounded-lg font-semibold"
+          // className="mt-6 bg-gray-700 hover:bg-gray-800 px-6 py-3 rounded-lg font-semibold"
+          className="mt-6 cursor-pointer inline-flex flex-row items-center justify-center gap-1 bg-gray-800 hover:bg-gray-700 px-4 py-2 text-sm rounded-lg transition"
         >
-          🛑 Stop Live
+          <GiStopSign className="w-6 h-6 text-red-800" />
+          Stop Live
         </button>
       )}
     </div>

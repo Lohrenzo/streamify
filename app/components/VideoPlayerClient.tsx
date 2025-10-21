@@ -206,7 +206,7 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
       <div className="w-full max-w-4xl app-card p-8">
         <div className="flex items-center justify-between gap-3 mb-6 z-30 sticky top-2 bg-black/70 backdrop-blur-xl rounded-b-2xl">
           <div className="flex flex-col items-start justify-center gap-0 p-3">
-            <h1 className="text-xl font-bold mb-0 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold mb-0 bg-gradient-to-r from-blue-700 to-blue-400 bg-clip-text text-transparent">
               {video.title} {/* Display video title */}
             </h1>
             <p className="text-start text-gray-400 text-sm">
@@ -226,7 +226,7 @@ export default function VideoPlayerClient({ video }: VideoPlayerClientProps) {
             ) : (
               <IoMdHeartEmpty className="h-5 w-5" />
             )}
-            <span className="text-xs text-gray-400">{likeCount}</span>
+            <small className="text-[10px] text-gray-400">{likeCount}</small>
           </button>
         </div>
         <div className="aspect-video bg-black rounded-xl overflow-hidden mb-6">

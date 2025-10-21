@@ -339,6 +339,8 @@ import { parse } from "node:url";
 import { createServer } from "node:http";
 import next from "next";
 import { WebSocket, WebSocketServer } from "ws";
+import { prisma } from "./prisma.ts"
+
 
 interface UserInfo {
     id: string;
@@ -362,7 +364,7 @@ const users = new Map<string, { ws: WebSocket; user: UserInfo }>();
 // Map userId → broadcaster info (for those currently live)
 const broadcasters = new Map<string, Broadcaster>();
 
-// ✅ Start Next.js on port 3000
+// Start Next.js on port 3000
 nextApp.prepare().then(() => {
     const server = createServer((req, res) => {
         handle(req, res, parse(req.url || "", true));
@@ -373,7 +375,7 @@ nextApp.prepare().then(() => {
         console.log(`🚀 Next.js ready at http://localhost:${port}`)
     );
 
-    // ✅ Create a standalone WebSocket server on port 4000
+    // Create a standalone WebSocket server on port 4000
     const wss = new WebSocketServer({ port: 4000 });
     console.log("🌐 WebSocket server running on ws://localhost:4000");
 
@@ -402,7 +404,7 @@ nextApp.prepare().then(() => {
         console.log("🟢 New WebSocket connection");
         let userId: string | undefined;
 
-        ws.on("message", (msgBuffer) => {
+        ws.on("message", async (msgBuffer) => {
             try {
                 const msg = JSON.parse(msgBuffer.toString());
                 if (msg.type === "init" && msg.user?.id) {
@@ -422,27 +424,99 @@ nextApp.prepare().then(() => {
                     return;
                 }
 
-                // Handle private messages
-                if (msg.type === "privateMessage" && msg.to && msg.text) {
-                    const target = users.get(msg.to);
+                // When user fetches chat history
+                if (msg.type === "getChatHistory" && msg.chatPartnerId && userId) {
+                    const chatId = [userId, msg.chatPartnerId].sort().join("_");
+
+                    // Fetch full history
+                    const messages = await prisma.privateMessage.findMany({
+                        where: { chatId },
+                        orderBy: { createdAt: "asc" },
+                    });
+
+                    // Mark messages from chatPartner → current user as seen
+                    await prisma.privateMessage.updateMany({
+                        where: {
+                            chatId,
+                            receiverId: userId,
+                            seen: false,
+                        },
+                        data: { seen: true },
+                    });
+
+                    ws.send(JSON.stringify({ type: "chatHistory", messages }));
+
+                    // Notify sender that their messages were read
+                    const sender = users.get(msg.chatPartnerId);
+                    if (sender?.ws.readyState === WebSocket.OPEN) {
+                        sender.ws.send(
+                            JSON.stringify({
+                                type: "messagesSeen",
+                                seenBy: userId,
+                                chatId,
+                            })
+                        );
+                    }
+
+                    return;
+                }
+
+                // Handle private message sending
+                if (msg.type === "privateMessage" && msg.to && msg.text && userId) {
+                    const receiverId = msg.to;
+                    const senderId = userId;
+                    const chatId = [senderId, receiverId].sort().join("_");
+
+                    // Save message with seen: false to db
+                    const savedMessage = await prisma.privateMessage.create({
+                        data: {
+                            chatId,
+                            senderId,
+                            receiverId,
+                            content: msg.text,
+                            seen: false,
+                        },
+                    });
+
+                    // Confirmation to sender
+                    ws.send(
+                        JSON.stringify({
+                            type: "messageSent",
+                            tempId: msg.tempId, // temporary ID for optimistic UI
+                            message: {
+                                from: senderId,
+                                text: msg.text,
+                                timestamp: savedMessage.createdAt,
+                            },
+                        })
+                    );
+
+                    // Deliver message to receiver
+                    const target = users.get(receiverId);
                     if (target?.ws.readyState === WebSocket.OPEN) {
                         target.ws.send(
                             JSON.stringify({
                                 type: "message",
-                                from: userId,
+                                from: senderId,
                                 text: msg.text,
-                                timestamp: Date.now(),
+                                timestamp: savedMessage.createdAt,
                             })
                         );
                     }
+
+                    return;
                 }
 
-                // Future: handle live streaming signaling
-                if (msg.type === "offer" || msg.type === "answer" || msg.type === "candidate") {
+                // handle live streaming (WebRTC) signaling
+                if (["offer", "answer", "candidate"].includes(msg.type) && msg.to) {
                     const target = users.get(msg.to);
                     if (target?.ws.readyState === WebSocket.OPEN) {
-                        target.ws.send(JSON.stringify(msg));
+                        target.ws.send(JSON.stringify({
+                            ...msg,
+                            from: userId, // who it is from
+                        }));
                     }
+                    return;
                 }
 
                 // Start broadcasting
@@ -465,6 +539,7 @@ nextApp.prepare().then(() => {
 
                         broadcastLiveBroadcasters();
                     }
+                    return;
                 }
 
                 // Stop broadcasting
@@ -481,56 +556,20 @@ nextApp.prepare().then(() => {
                     for (const { ws } of users.values()) {
                         if (ws.readyState === WebSocket.OPEN) ws.send(payload);
                     }
+                    return;
                 }
 
-                // WebRTC signaling: offer from broadcaster to viewer
-                if (msg.type === "offer" && msg.to && msg.offer) {
-                    const target = users.get(msg.to);
-                    if (target?.ws.readyState === WebSocket.OPEN) {
-                        target.ws.send(JSON.stringify({
-                            type: "offer",
-                            from: userId,
-                            offer: msg.offer,
-                        }));
-                    }
-                }
-
-                // WebRTC signaling: answer from viewer to broadcaster
-                if (msg.type === "answer" && msg.to && msg.answer) {
-                    const target = users.get(msg.to);
-                    if (target?.ws.readyState === WebSocket.OPEN) {
-                        target.ws.send(JSON.stringify({
-                            type: "answer",
-                            from: userId,
-                            answer: msg.answer,
-                        }));
-                    }
-                }
-
-                // WebRTC signaling: ICE candidates
-                if (msg.type === "iceCandidate" && msg.to && msg.candidate) {
-                    const target = users.get(msg.to);
-                    if (target?.ws.readyState === WebSocket.OPEN) {
-                        target.ws.send(JSON.stringify({
-                            type: "iceCandidate",
-                            from: userId,
-                            candidate: msg.candidate,
-                        }));
-                    }
-                }
-
-                // Request to watch a specific broadcaster
+                // Viewer joins live stream
                 if (msg.type === "watchStream" && msg.broadcasterId && userId) {
                     const broadcaster = users.get(msg.broadcasterId);
                     if (broadcaster?.ws.readyState === WebSocket.OPEN) {
-                        // Notify broadcaster that someone wants to watch
+                        // Notify broadcaster that someone joined
                         broadcaster.ws.send(JSON.stringify({
                             type: "viewerJoined",
                             viewerId: userId,
                         }));
                     }
                 }
-
 
             } catch (err) {
                 console.error("❌ Invalid WS message:", err);

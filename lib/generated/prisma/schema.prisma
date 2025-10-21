@@ -6,11 +6,11 @@ generator client {
 
 datasource db {
   // SQLite for development
-  provider = "sqlite"
-  url      = "file:./dev.sqlite"
+  // provider = "sqlite"
+  // url      = "file:./dev.sqlite"
   // PostgreSQL for production
-  // provider = "postgresql"
-  // url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Account {
@@ -58,11 +58,14 @@ model User {
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
-  videos   Video[]
-  likes    Like[]
-  comments Comment[]
+  accounts         Account[]
+  sessions         Session[]
+  videos           Video[]
+  likes            Like[]
+  comments         Comment[]
+  StreamMessage    StreamMessage[]
+  sentMessages     PrivateMessage[] @relation("SentMessages")
+  receivedMessages PrivateMessage[] @relation("ReceivedMessages")
 
   @@map("users")
 }
@@ -89,6 +92,32 @@ model Video {
   comments Comment[]
 
   @@map("videos")
+}
+
+model StreamMessage {
+  id        String   @id @default(cuid())
+  streamId  String
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model PrivateMessage {
+  id         String   @id @default(cuid())
+  chatId     String // A consistent ID for this chat (e.g., "user1_user2" in sorted order)
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+  seen       Boolean  @default(false)
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([chatId])
+  @@map("direct_messages")
 }
 
 model Like {

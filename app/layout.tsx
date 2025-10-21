@@ -3,8 +3,8 @@ import { Roboto_Mono, Fahkwang } from "next/font/google";
 import "./globals.css";
 
 import { Providers } from "@/app/providers";
-import Footer from "./components/Footer";
 import Nav from "./components/Nav";
+import VideoUpload from "./components/VideoUpload";
 
 const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
@@ -30,13 +30,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`
-         ${robotoMono.className} antialiased`}
+         ${robotoMono.className} antialiased static`}
       >
         <Providers>
           <div className="min-h-dvh pb-16">
             {children}
             {/* <Footer /> */}
           </div>
+          <VideoUpload />
           <Nav />
         </Providers>
       </body>

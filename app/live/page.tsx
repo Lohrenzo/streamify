@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { BsBroadcast } from "react-icons/bs";
 
 interface Broadcaster {
   id: string;
@@ -82,7 +83,7 @@ export default function LiveHubPage() {
 
       // Handle ICE candidates
       if (
-        msg.type === "iceCandidate" &&
+        msg.type === "candidate" &&
         selectedBroadcaster &&
         msg.from === selectedBroadcaster.id
       ) {
@@ -124,12 +125,16 @@ export default function LiveHubPage() {
         if (event.candidate && wsRef.current) {
           wsRef.current.send(
             JSON.stringify({
-              type: "iceCandidate",
+              type: "candidate",
               to: from,
               candidate: event.candidate,
             })
           );
         }
+      };
+
+      pc.onconnectionstatechange = () => {
+        console.log("📡 Connection state:", pc.connectionState);
       };
 
       await pc.setRemoteDescription(new RTCSessionDescription(offer));
@@ -177,17 +182,18 @@ export default function LiveHubPage() {
     return <div className="text-white p-8">Please log in first.</div>;
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-8">
+    <main className="min-h-screen text-white p-8">
       {!selectedBroadcaster ? (
         <>
           <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+            <div className="relative flex justify-between items-center mb-8">
               <h1 className="text-3xl font-bold">Live Streams</h1>
               <button
                 onClick={() => router.push("/live/start")}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition"
+                className="sticky top-0 right-0 cursor-pointer flex flex-row items-center justify-center gap-1 px-4 py-2 text-sm app-button rounded-lg transition"
               >
-                🎥 Start Live
+                <BsBroadcast className="w-6 h-6" />
+                Go Live
               </button>
             </div>
 
@@ -199,8 +205,9 @@ export default function LiveHubPage() {
                 </p>
                 <button
                   onClick={() => router.push("/live/start")}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg"
+                  className="cursor-pointer inline-flex flex-row items-center justify-center gap-1 px-4 py-2 text-sm app-button rounded-lg transition"
                 >
+                  <BsBroadcast className="w-6 h-6" />
                   Go Live
                 </button>
               </div>

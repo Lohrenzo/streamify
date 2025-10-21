@@ -90,7 +90,7 @@ export default function ChatPage() {
                       image: encodeURIComponent(user.image!),
                     },
                   }}
-                  className="flex items-center gap-3 bg-gray-700/50 hover:bg-blue-600 transition-all p-3 rounded-lg"
+                  className="flex items-center gap-3 bg-[#1018285d] hover:bg-[#101828e6] transition-all p-3 rounded-lg"
                 >
                   <img
                     src={user.image}

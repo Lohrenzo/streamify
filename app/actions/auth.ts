@@ -2,7 +2,6 @@
 import { signIn, signOut } from '@/auth'
 import { updateUser } from '@/utils/db';
 // import { redirect } from 'next/navigation'
-// import { FormState } from 'react-hook-form'
 
 /**
  * @module authActions
