@@ -24,10 +24,10 @@ export default function ChatPage() {
       ? session.user.image
       : `https://avatar.iran.liara.run/username?username=${session.user.first_name}+${session.user.last_name}`;
 
-    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsHost = window.location.hostname;
-    const wsPort = 4000;
-    const ws = new WebSocket(`${wsProtocol}://${wsHost}:${wsPort}`);
+    const origin = window.location.origin; // e.g. https://streamify-230c.onrender.com
+    const wsUrl = origin.replace(/^http/, "ws") + "/api/ws"; // switch protocol to ws/wss
+    const ws = new WebSocket(wsUrl);
+
     wsRef.current = ws;
 
     ws.onopen = () => {
