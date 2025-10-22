@@ -7,7 +7,7 @@
     "dev:normal": "next dev --turbopack",
     "dev": "tsx watch server.ts",
     "build": "next build",
-    "start": "next start"
+    "start": "tsx server.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.0",
