@@ -6,7 +6,7 @@
   "scripts": {
     "dev:normal": "next dev --turbopack",
     "dev": "tsx watch server.ts",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start"
   },
   "dependencies": {
