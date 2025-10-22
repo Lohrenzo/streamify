@@ -8,30 +8,36 @@ The app leverages **WebRTC** for real-time broadcasting, **Next.js API routes** 
 ## 🚀 Features
 
 ### 🔴 Live Streaming (WebRTC)
+
 - Start a live broadcast directly from your browser (`/live/start`)
 - Viewers can watch streams in real-time (`/watch/[id]`)
 - Automatic handling of ICE candidates, signaling, and peer connections
 - Real-time updates on stream status (Connected / Disconnected / Ended)
 
 ### 👥 Authentication
+
 - Secure login, signup, and session management using **NextAuth**
 - OAuth and credential-based login support
 - Persistent user sessions and profile data
 
 ### 🎞️ Video Management
+
 - Upload, list, and manage videos via `/api/videos`
 - Support for comments and likes through dynamic API routes (`/api/videos/[id]/comments`, `/api/videos/[id]/likes`)
 - View profiles of broadcasters via `/profile/[id]`
 
 ### 💬 Chat Integration
+
 - Real-time chat system via WebSocket channels (`/chat/[id]`)
 - Enables user-to-user or stream-related discussions
 
 ### 🧠 TypeScript End-to-End
+
 - Strong typing across both frontend and backend
 - Reusable interfaces for API responses and entities
 
 ### ⚙️ Unified Backend with Next.js API Routes
+
 - Server-side logic lives under `app/api`
 - No need for a separate Node.js/Express backend
 - Includes endpoints for:
@@ -88,47 +94,51 @@ app/
 ## 🧩 Key Files and Responsibilities
 
 ### `app/live/start/page.tsx`
-Handles **live broadcasting** via WebRTC.
 
-### `app/watch/[id]/page.tsx`
-Handles **viewing live streams** in real-time.
+Handles **live broadcasting** and **viewing live streams** in real-time via WebRTC.
 
 ### `app/api/ws/route.ts`
+
 Implements **WebSocket signaling** for peer-to-peer communication.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-------------|
-| **Frontend** | React 19 + Next.js 15 (App Router) |
-| **Backend** | Next.js API Routes |
-| **Auth** | NextAuth.js |
-| **Database** | Optional (Prisma, PostgreSQL, etc.) |
-| **Real-Time** | WebRTC + WebSocket |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS |
-| **Deployment** | Vercel / Node.js |
+| Layer         | Technology                         |
+| ------------- | ---------------------------------- |
+| **Frontend**  | React 19 + Next.js 15 (App Router) |
+| **Backend**   | Next.js API Routes                 |
+| **Auth**      | NextAuth.js                        |
+| **Database**  | Prisma, PostgreSQL                 |
+| **Real-Time** | WebRTC + WebSocket                 |
+| **Language**  | TypeScript                         |
+| **Styling**   | Tailwind CSS                       |
 
 ---
 
 ## ⚡ Getting Started
 
 ```bash
-git clone https://github.com/yourusername/live-stream-app.git
+git clone https://github.com/Lohrenzo/streamify.git
 cd live-stream-app
 npm install
 ```
 
 Create `.env.local`:
+
 ```env
-NEXTAUTH_SECRET=your_secret
+AUTH_SECRET=your_secret
+AUTH_GOOGLE_ID=your_id
+AUTH_GOOGLE_SECRET=your_secret
 NEXTAUTH_URL=http://localhost:3000
+AUTH_TRUST_HOST=true
 DATABASE_URL=your_database_url
+PORT=3000
 ```
 
 Run development server:
+
 ```bash
 npm run dev
 ```
@@ -140,26 +150,24 @@ Access at: http://localhost:3000
 ## 🎬 Using the Live Streaming Feature
 
 1. Start broadcast: `/live/start`
-2. Share watch URL: `/watch/[id]`
-3. Viewers connect automatically
-4. Close tab to end stream
+2. Viewers connect automatically
+3. Close tab to end stream
 
 ---
 
 ## 🧰 Scripts
 
-| Command | Description |
-|----------|-------------|
-| `npm run dev` | Run development server |
+| Command         | Description             |
+| --------------- | ----------------------- |
+| `npm run dev`   | Run development server  |
 | `npm run build` | Build production bundle |
-| `npm start` | Run production build |
-| `npm run lint` | Lint TypeScript code |
+| `npm start`     | Run production build    |
+| `npm run lint`  | Lint TypeScript code    |
 
 ---
 
 ## 🧠 Future Enhancements
-- Add TURN server support
-- Integrate Prisma DB
+
 - Live chat overlay
 - Viewer count tracking
 - Recording support
@@ -168,8 +176,8 @@ Access at: http://localhost:3000
 
 ## 👨‍💻 Author
 
-**Your Name**  
-Built with ❤️ using Next.js + TypeScript
+**Laurence Fubara**  
+Built using Next.js + TypeScript
 
 ---
 
