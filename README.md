@@ -61,11 +61,10 @@ app/
 │   ├── upload/route.ts
 │   ├── users/[id]/route.ts
 │   ├── videos/
-│   │   ├── [id]/comments/
-│   │   ├── [id]/likes/
-│   │   └── [id]/route.ts
-│   │   └── route.ts
-│   └── ws/route.ts
+│       ├── [id]/comments/
+│       ├── [id]/likes/
+│       ├── [id]/route.ts
+│       └── route.ts
 │
 ├── auth/
 │   ├── error/page.tsx
@@ -76,6 +75,19 @@ app/
 │   ├── [id]/page.tsx
 │   └── page.tsx
 │
+├── components/
+│   ├── auth/
+│   │   ├── signout.tsx
+│   │   ├── signup.tsx
+│   │   ├── signin.tsx
+│   │   └── userAvatar.tsx
+│   ├── Button.tsx
+│   ├── Nav.tsx
+│   ├── VideoCard.tsx
+│   ├── VideoGrid.tsx
+│   ├── VideoPlayerClient.tsx
+│   └── VideoUpload.tsx
+│
 ├── live/
 │   ├── start/page.tsx
 │   └── page.tsx
@@ -84,9 +96,11 @@ app/
 ├── search/page.tsx
 ├── videos/[id]/page.tsx
 │
+├── favicon.ico
+├── globals.css
 ├── layout.tsx
 ├── providers.tsx
-└── globals.css
+└── page.tsx
 ```
 
 ---

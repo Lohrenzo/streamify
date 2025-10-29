@@ -2,6 +2,7 @@
 import { authenticateWithGoogle, handleSignIn } from "@/app/actions/auth";
 import Button from "@/app/components/Button";
 import { useTransition } from "react";
+import { toast } from "react-hot-toast";
 
 /**
  * Client component rendering the sign-in UI with credential and Google OAuth flows.
@@ -20,7 +21,21 @@ export default function SignInForm() {
       <form
         action={(formData) =>
           startTransition(async () => {
-            handleSignIn(formData);
+            try {
+              await handleSignIn(formData);
+            } catch (error) {
+              if (
+                typeof error === "object" &&
+                error !== null &&
+                "ZodError" in error &&
+                Array.isArray((error as any)["ZodError"])
+              ) {
+                toast.error((error as any)["ZodError"][0].message);
+              } else {
+                toast.error("Failed to sign up");
+              }
+              console.error(error);
+            }
           })
         }
         className="mt-2 flex flex-col gap-4 min-w-full"
